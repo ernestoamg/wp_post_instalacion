@@ -2,8 +2,7 @@
 clear
 
 ##verificamos primero si el usuario es ROOT, si es root entonces agrega el parámetro '--allow-root' para ejecutar los comandos
-if [ "$EUID" -ne 0 ]
-  then allowroot = ""
+if [ "$EUID" -ne 0 ]; then
   allowroot=""
 else
   echo "Corriendo en modo ROOT..."
