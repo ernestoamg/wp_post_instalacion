@@ -16,12 +16,12 @@ echo "================================================"
 
 read -n 1 -r -s -p $'Presione una tecla para iniciar...\n'
 
-#sección especial para instalar plugins de migracion
+#sección especial para reinstalar, por terminar
 #read -p "¿Desea resetear la Base de datos? ESTE PROCESO NO ES REVERSIBLE Y BORRA TODO [s/n]: " resetdb
 #if [ "$ejecuta_resetdb" == s ] ; then
 #	wp db reset --yes
 #else
-#	echo "Ok, saltando plugins de migración."
+#	echo "Ok, saltando reinstalación."
 #fi
 
 
@@ -31,7 +31,8 @@ wp plugin delete akismet $allowroot
 wp plugin delete hello $allowroot
 wp theme delete twentyseventeen $allowroot
 wp theme delete twentynineteen $allowroot
-wp theme update twentytwenty $allowroot
+wp theme install popularfx --activate $allowroot
+wp theme delete twentytwenty $allowroot
 
 ##algunos ajustes default necesarios
 wp option update blogdescription "" $allowroot
@@ -50,8 +51,9 @@ read -p "Instalar los plugins de seguridad PRO? [s/n]: " instalar_securitypro
 if [ "$instalar_securitypro" == s ] ; then
 	wp plugin install https://undominio.com/unpluginespecial.zip $allowroot
 else
+	echo "Ok, instalando versión gratuita."
 	wp plugin install better-wp-security $allowroot
-	echo "Ok, instalada versión gratuita."
+	echo "Versión gratuita instalada."
 fi
 
 read -p "Instalar editor clásico? [s/n]: " instalar_editorclasico
