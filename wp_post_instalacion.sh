@@ -73,7 +73,7 @@ fi
 
 clear
 
-read -p "Instalar editor clásico? [s/n]: " instalar_htaccess
+read -p "Deseas crear un .htaccess default? [s/n]: " instalar_htaccess
 if [ "$instalar_htaccess" == s ] ; then
 echo "Creando archivo .htaccess"
 cat > .htaccess<<EOF
