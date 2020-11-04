@@ -63,12 +63,14 @@ if [ "$instalar_editorclasico" == s ] ; then
 fi
 
 #sección especial para instalar plugins de migracion
-read -p "Instalar los plugins de migración? [s/n]: " instalar_migracion
+read -p "Instalar plugins de migración PRO? [s/n]: " instalar_migracion
 if [ "$instalar_migracion" == s ] ; then
 	wp plugin install https://undominio.com/unpluginespecial.zip $allowroot
 	wp plugin install https://undominio.com/unpluginespecial.zip $allowroot
 else
-	echo "Ok, saltando plugins de migración."
+	echo "Ok, instalando versión gratuita: all-in-one-wp-migration."
+	wp plugin install all-in-one-wp-migration $allowroot
+	echo "Versión gratuita instalada."
 fi
 
 clear
