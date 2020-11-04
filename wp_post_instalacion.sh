@@ -72,6 +72,9 @@ else
 fi
 
 clear
+
+read -p "Instalar editor clásico? [s/n]: " instalar_htaccess
+if [ "$instalar_htaccess" == s ] ; then
 echo "Creando archivo .htaccess"
 cat > .htaccess<<EOF
 # BEGIN WordPress
@@ -83,6 +86,10 @@ RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule . /index.php [L]
 # END WordPress
 EOF
+	echo "Ok, .htaccess creado."
+else
+	echo "Ok, saltando .htaccess nuevo."
+fi
 
 echo "================================================"
 echo "Limpiando un poco..."
