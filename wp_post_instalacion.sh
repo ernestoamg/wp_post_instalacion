@@ -1,7 +1,8 @@
 #!/bin/bash
+#wp_post_instalacion.sh
+
 clear
 
-##verificamos primero si el usuario es ROOT, si es root entonces agrega el parámetro '--allow-root' para ejecutar los comandos
 if [ "$EUID" -ne 0 ]; then
   allowroot=""
 else
@@ -14,7 +15,7 @@ echo "================================================"
 echo "Ejecutando procesos post-instalacion"
 echo "================================================"
 
-read -n 1 -r -s -p $'Presione una tecla para iniciar...\n'
+read -n 1 -r -s -p $'Presione una tecla para iniciar o CTRL+C para cancelar...\n'
 
 #sección especial para reinstalar, por terminar
 #read -p "¿Desea resetear la Base de datos? ESTE PROCESO NO ES REVERSIBLE Y BORRA TODO [s/n]: " resetdb
@@ -61,10 +62,9 @@ if [ "$instalar_editorclasico" == s ] ; then
 	wp plugin install classic-editor $allowroot
 fi
 
-#sección especial para instalar plugins de 'migracion', usado como ejemplo.
+#sección especial para instalar plugins de migracion
 read -p "Instalar los plugins de migración? [s/n]: " instalar_migracion
 if [ "$instalar_migracion" == s ] ; then
-	wp plugin install https://undominio.com/unpluginespecial.zip $allowroot
 	wp plugin install https://undominio.com/unpluginespecial.zip $allowroot
 	wp plugin install https://undominio.com/unpluginespecial.zip $allowroot
 else
@@ -91,8 +91,67 @@ else
 	echo "Ok, saltando .htaccess nuevo."
 fi
 
-echo "================================================"
-echo "Limpiando un poco..."
-echo "================================================"
+echo "============================================================"
+echo "Opciones adicionales de seguridad"
+echo "Las siguientes opciones agregan código al archivo .htaccess"
+echo "Si ya ejecutó estas tareas, no las vuelva a ejecutar"
+echo "============================================================"
+echo ""
+read -n 1 -r -s -p $'Presione una tecla para iniciar o CTRL+C para cancelar...\n'
+echo ""
+
+echo "Borrando archivos: readme.html license.txt wp-config-sample.php..."
 rm -rf readme.html license.txt wp-config-sample.php;
+
+read -p "Deseas ver el archivo .htaccess? [s/n]: " ver_htaccess
+if [ "$ver_htaccess" == s ] ; then
+	cat .htaccess
+fi
+
+read -p "Deseas bloquear el acceso al wp-config.php? [s/n]: " bloquear_wp_config
+if [ "$bloquear_wp_config" == s ] ; then
+	echo "Bloqueando..."
+	echo "
+<Files wp-config.php>
+order allow,deny
+deny from all
+</Files>" >> .htaccess
+	echo "Ok, bloqueo del wp-config.php realizado."
+else
+	echo "Ok, saltando bloqueo del wp-config.php."
+fi
+
+read -p "Deseas proteger la carpeta uploads? [s/n]: " proteger_uploads
+if [ "$proteger_uploads" == s ] ; then
+	echo "protegiendo..."
+	echo '
+<Files ~ ".*\..*">
+	Order Allow,Deny
+	Deny from all
+</Files>
+<FilesMatch "\.(jpg|jpeg|jpe|gif|png|bmp|tif|tiff|doc|pdf|rtf|xls|numbers|odt|pages|key|mp3|mp4|webm|flv|webp)$">
+	Order Deny,Allow
+	Allow from all
+</FilesMatch>' >> .htaccess
+	echo "Ok, carpeta uploads protegida."
+else
+	echo "Ok, saltando protección de carpeta uploads."
+fi
+
+read -p "Deseas bloquear los pingbacks? [s/n]: " bloquear_pingbacks
+if [ "$bloquear_pingbacks" == s ] ; then
+	echo "Bloqueando..."
+	echo "
+<Files xmlrpc.php>
+	Order Deny,Allow
+	Deny from all
+</Files>" >> .htaccess
+	echo "Ok, bloqueo de pingbacks realizado."
+else
+	echo "Ok, saltando bloqueo de pingbacks."
+fi
+
+echo "Protegiendo wp-config.php contra escritura..."
+chmod 444 wp-config.php
+
 echo "Proceso completado!"
