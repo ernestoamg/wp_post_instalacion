@@ -19,3 +19,9 @@ Este bash ejecuta las siguientes tareas:
   - regla para proteger carpeta uploads
   - regla para rechazar pingbacks
 - Cambiar permisos en el wp-config.php
+
+Usted debe modificar las secciones de:
+- Instalar los plugins de seguridad PRO: solo si tiene una opción PRO para instalar, al contestar "no", se instala "better-wp-security"
+- Instalar los plugins de migración: usted debe proveer los archivos de instalación de su versió PRO, de otro modo instalará "all-in-one-wp-migration"
+
+Modificar el resto a su gusto.
