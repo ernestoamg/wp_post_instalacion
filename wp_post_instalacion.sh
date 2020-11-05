@@ -40,7 +40,7 @@ wp plugin delete akismet $allowroot
 wp plugin delete hello $allowroot
 wp theme delete twentyseventeen $allowroot
 wp theme delete twentynineteen $allowroot
-wp theme install popularfx --activate $allowroot
+wp theme install wp-bootstrap-starter --activate $allowroot
 wp theme delete twentytwenty $allowroot
 
 ##algunos ajustes default necesarios
@@ -50,7 +50,7 @@ wp option update timezone_string "America/Panama" $allowroot
 wp option update permalink_structure "/%postname%" $allowroot
 
 ##plugins default
-wp plugin install go-live-update-urls $allowroot
+wp plugin install go-live-update-urls --activate $allowroot
 wp plugin install mainwp-child --activate $allowroot
 wp plugin install mainwp-child-reports --activate $allowroot
 wp plugin install wp-fastest-cache --activate $allowroot
@@ -89,7 +89,7 @@ echo "Antes de responder 's' asegúrese de terner backup del wp-config.php y su 
 echo "============================================================"
 echo ""
 echo "Estas son sus tablas actuales:"
-wp db tables
+wp db tables $allowroot
 echo ""
 #sección para renombrar cambiar el prefijo de las tablas de la base de datos
 read -p "${yellow}¿Desea renombrar los prefijos de las tablas? [s/n]: ${clear}" renombrar_prefijos
@@ -104,9 +104,9 @@ else
 	echo "Ok, saltando cambio de prefijo."
 fi
 echo "Tablas renombradas:"
-wp db tables
+wp db tables $allowroot
 echo ""
-read -n 1 -r -s -p $'${yellow}Verifique y presione una tecla para continuar o CTRL+C para cancelar...\n${clear}'
+read -n 1 -r -s -p $'${yellow}Verifique y presione una tecla para continuar o CTRL+C para cancelar...\n ${clear}'
 
 clear
 echo "============================================================"
