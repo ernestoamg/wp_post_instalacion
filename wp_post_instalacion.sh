@@ -34,14 +34,21 @@ read -n 1 -r -s -p $'Presione una tecla para iniciar o CTRL+C para cancelar...\n
 #fi
 
 
-## borra los posts/paginas de ejemplo, plugins no deseados y elimina temas default
-wp post delete 1 2 --force $allowroot 
-wp plugin delete akismet $allowroot
-wp plugin delete hello $allowroot
-wp theme delete twentyseventeen $allowroot
-wp theme delete twentynineteen $allowroot
+## borra contenido default
+# posts/paginas de ejemplo
+wp post delete 1 2 --force $allowroot
+
+# plugins no deseados
+wp plugin delete \
+  akismet \
+  hello $allowroot
+
+# instala tema nuevo y elimina temas default
 wp theme install wp-bootstrap-starter --activate $allowroot
-wp theme delete twentytwenty $allowroot
+wp theme delete \
+  twentyseventeen \
+  twentynineteen \
+  twentytwenty $allowroot
 
 ##algunos ajustes default necesarios
 wp option update blogdescription "" $allowroot
@@ -50,11 +57,13 @@ wp option update timezone_string "America/Panama" $allowroot
 wp option update permalink_structure "/%postname%" $allowroot
 
 ##plugins default
-wp plugin install go-live-update-urls --activate $allowroot
-wp plugin install mainwp-child --activate $allowroot
-wp plugin install mainwp-child-reports --activate $allowroot
-wp plugin install wp-fastest-cache --activate $allowroot
-wp plugin install wp-reset --activate $allowroot
+wp plugin install \
+  go-live-update-urls \
+  mainwp-child \
+  mainwp-child-reports \
+  wp-fastest-cache \
+  wp-reset \
+  --activate $allowroot
 
 read -p "${yellow}Instalar los plugins de seguridad PRO? [s/n]:${clear} " instalar_securitypro
 if [ "$instalar_securitypro" == s ] ; then
@@ -91,6 +100,26 @@ echo ""
 echo "Estas son sus tablas actuales:"
 wp db tables $allowroot
 echo ""
+
+# Backup de la base de datos
+read 'Desea hacer una copia de seguridad?' -n 1 -r
+if [[ $REPLY =~ ^[Ss]$ ]]; then
+  # Generamos dump, desplegamos resultados y guardamos nombre del archivo
+  # NOTA: Se podría asignar un nombre predeterminado al dump usando:
+  #       $ wp db export <filename>
+  #       pero no encontré forma amigable de determinar el nombre de la base de
+  #       datos para incluir en el nombre del archivo.
+  DUMPNAME=$(wp db export --add-drop-table | tee /dev/tty | cut -d \' -f 2)
+  ZIPPATH="$HOME/wp-backup"
+  ZIPURI="$ZIPPATH/${DUMPNAME%.sql}".zip
+
+  mkdir -p $ZIPPATH
+  echo 'Generando zip con backup de la base de datos y wp-config.php...'
+  zip "$ZIPURI" $DUMPNAME wp-config.php
+  rm $DUMPNAME
+  echo "Se creó el archivo de respaldo: $ZIPURI"
+fi
+
 #sección para renombrar cambiar el prefijo de las tablas de la base de datos
 read -p "${yellow}¿Desea renombrar los prefijos de las tablas? [s/n]: ${clear}" renombrar_prefijos
 if [ "$renombrar_prefijos" == s ] ; then
@@ -196,11 +225,11 @@ deny from all
 		then
 		    echo "${red} $0: El archivo'${ht_file}' ya existe, no se hicieron cambios.${clear}"
 		fi
-	
+
 	else
 		echo "Ok, saltando archivos PHP deshabilitados."
 	fi
-	
+
 read -p "${yellow}¿Deseas bloquear los pingbacks? [s/n]: ${clear}" bloquear_pingbacks
 if [ "$bloquear_pingbacks" == s ] ; then
 
