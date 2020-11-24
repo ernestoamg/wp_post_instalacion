@@ -24,3 +24,10 @@ Usted debe modificar las secciones de:
 - Instalar los plugins de migración: usted debe proveer los archivos de instalación de su versió PRO, de otro modo instalará "all-in-one-wp-migration"
 
 Modificar el resto a su gusto.
+
+## Instrucciones
+Ejecuta este comando en tu terminal:
+```shell
+bash <(curl -sL https://github.com/ernestoamg/wpcli-post-instalacion/raw/main/wp_post_instalacion.sh)
+```
+
