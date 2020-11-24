@@ -91,6 +91,26 @@ echo ""
 echo "Estas son sus tablas actuales:"
 wp db tables $allowroot
 echo ""
+
+# Backup de la base de datos
+read 'Desea hacer una copia de seguridad?' -n 1 -r
+if [[ $REPLY =~ ^[Ss]$ ]]; then
+  # Generamos dump, desplegamos resultados y guardamos nombre del archivo
+  # NOTA: Se podría asignar un nombre predeterminado al dump usando:
+  #       $ wp db export <filename>
+  #       pero no encontré forma amigable de determinar el nombre de la base de
+  #       datos para incluir en el nombre del archivo.
+  DUMPNAME=$(wp db export --add-drop-table | tee /dev/tty | cut -d \' -f 2)
+  ZIPPATH="$HOME/wp-backup"
+  ZIPURI="$ZIPPATH/${DUMPNAME%.sql}".zip
+
+  mkdir -p $ZIPPATH
+  echo 'Generando zip con backup de la base de datos y wp-config.php...'
+  zip "$ZIPURI" $DUMPNAME wp-config.php
+  rm $DUMPNAME
+  echo "Se creó el archivo de respaldo: $ZIPURI"
+fi
+
 #sección para renombrar cambiar el prefijo de las tablas de la base de datos
 read -p "${yellow}¿Desea renombrar los prefijos de las tablas? [s/n]: ${clear}" renombrar_prefijos
 if [ "$renombrar_prefijos" == s ] ; then
